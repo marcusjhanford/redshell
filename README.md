@@ -1,5 +1,5 @@
 # RedShell
-![RedShell logo](redshell_logo.png)
+![RedShell logo](redshell_logo-removebg-preview.png)
 ![Verified by RedShell](assets/verified-by-redshell.svg)
 
 The open source, serverless judge for agent commerce.
