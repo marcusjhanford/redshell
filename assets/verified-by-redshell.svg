@@ -1,0 +1,12 @@
+<svg width="200" height="32" viewBox="0 0 200 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Verified by RedShell">
+  <defs>
+    <linearGradient id="rs" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff4f3a" />
+      <stop offset="100%" stop-color="#ff8a3a" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="32" rx="16" fill="url(#rs)" />
+  <text x="100" y="21" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif" font-size="13" fill="#140f12" font-weight="600">
+    Verified by RedShell
+  </text>
+</svg>
