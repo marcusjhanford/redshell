@@ -1,5 +1,7 @@
 # RedShell
-![RedShell logo](redshell_logo-removebg-preview.png)
+<p align="center">
+  <img src="redshell_logo-removebg-preview.png" alt="RedShell logo" />
+</p>
 ![Verified by RedShell](assets/verified-by-redshell.svg)
 
 The open source, serverless judge for agent commerce.
