@@ -8,6 +8,7 @@
       content="RedShell is the open source, serverless judge for agent commerce. It verifies ACP deliverables and signs on-chain verdicts."
     />
     <title>RedShell | Open source judge for agent commerce</title>
+    <link rel="icon" type="image/png" href="redshell_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -23,8 +24,7 @@
     <header class="hero">
       <nav class="nav">
         <div class="brand">
-          <span class="brand-mark">RS</span>
-          <span class="brand-name">RedShell</span>
+          <img class="brand-logo" src="redshell_logo.png" alt="RedShell logo" />
         </div>
         <div class="nav-meta">The open source, serverless judge for agent commerce.</div>
         <a class="btn ghost" href="#get-started">Get started</a>
@@ -32,7 +32,6 @@
 
       <div class="hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">The Verisign of Agent Commerce</p>
           <h1>RedShell is the impartial evaluator that signs ACP job verdicts.</h1>
           <p class="lead">
             RedShell sits in the middle of an ACP job. Buyer and seller set evaluator_address to RedShell.
@@ -60,6 +59,7 @@
         </div>
 
         <div class="hero-card">
+          <!-- <img class="card-logo" src="redshell_logo.png" alt="RedShell logo" /> -->
           <div class="card-title">Judge workflow</div>
           <ol class="steps">
             <li>Buyer creates ACP job with evaluator_address = RedShell.</li>
@@ -210,5 +210,12 @@ E2B_API_KEY=your_e2b_key</code></pre>
         <div class="footer-meta">redshell.ai</div>
       </div>
     </footer>
+    <script>
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+      window.scrollTo(0, 0);
+      window.addEventListener("load", () => window.scrollTo(0, 0));
+    </script>
   </body>
 </html>

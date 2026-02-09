@@ -1,53 +1,73 @@
 import { routeToJudge } from "./router";
 import type { Env, JudgeVerdict } from "./types";
 import { submitVerdict } from "./utils/blockchain";
+import { fetchPendingMemoId } from "./utils/memos";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    if (request.method === "GET" || request.method === "HEAD") {
+      return new Response("RedShell Worker is running", { status: 200 });
+    }
+
     if (request.method !== "POST") {
       return new Response("Method Not Allowed", { status: 405 });
     }
 
-    const bodyText = await request.text();
-    let event: unknown;
-
     try {
-      event = JSON.parse(bodyText);
-    } catch {
-      return new Response("Invalid JSON", { status: 400 });
-    }
+      const bodyText = await request.text();
+      let event: unknown;
 
-    if (!verifySignature(request, env, bodyText)) {
-      return new Response("Unauthorized", { status: 401 });
-    }
+      try {
+        event = JSON.parse(bodyText);
+      } catch {
+        return new Response("Invalid JSON", { status: 400 });
+      }
 
-    const evaluator = getEvaluatorAddress(event);
-    const expected = env.REDSHELL_WALLET_ADDRESS;
+      if (!verifySignature(request, env, bodyText)) {
+        return new Response("Unauthorized", { status: 401 });
+      }
 
-    if (!evaluator || !expected) {
-      console.log("[RedShell] Missing evaluator or REDSHELL_WALLET_ADDRESS.");
-      return new Response("Ignored", { status: 202 });
-    }
+      const evaluator = getEvaluatorAddress(event);
+      const expected = env.REDSHELL_WALLET_ADDRESS;
 
-    if (!addressesEqual(evaluator, expected)) {
-      return new Response("Ignored", { status: 202 });
-    }
+      if (!evaluator || !expected) {
+        console.log("[RedShell] Missing evaluator or REDSHELL_WALLET_ADDRESS.");
+        return new Response("Ignored", { status: 202 });
+      }
+
+      if (!addressesEqual(evaluator, expected)) {
+        return new Response("Ignored", { status: 202 });
+      }
 
     const jobId = getJobId(event);
-    const verdict = await evaluateJob(event, env, jobId);
+    let memoId = getMemoId(event);
 
-    console.log(
-      `[RedShell] job ${jobId ?? "unknown"} -> ${verdict.approved ? "APPROVE" : "REJECT"} (${verdict.judge})`
-    );
+    if (!memoId && jobId) {
+      memoId = await fetchPendingMemoId(jobId, env);
+    }
 
-    return jsonResponse({ ok: true, jobId, verdict });
+    const verdict = await evaluateJob(event, env, { jobId, memoId });
+
+      console.log(
+        `[RedShell] job ${jobId ?? "unknown"} -> ${verdict.approved ? "APPROVE" : "REJECT"} (${verdict.judge})`
+      );
+
+      return jsonResponse({ ok: true, jobId, verdict });
+    } catch (error) {
+      console.log(`[RedShell] Unhandled error: ${stringifyError(error)}`);
+      return new Response("Internal Server Error", { status: 500 });
+    }
   }
 };
 
-async function evaluateJob(event: unknown, env: Env, jobId: string | null): Promise<JudgeVerdict> {
+async function evaluateJob(
+  event: unknown,
+  env: Env,
+  ids: { jobId: string | null; memoId: string | null }
+): Promise<JudgeVerdict> {
   const verdict = await routeToJudge(event, env);
   console.log(`[RedShell] intent to ${verdict.approved ? "APPROVE" : "REJECT"}: ${verdict.reason}`);
-  await submitVerdict(jobId, verdict.approved, env);
+  await submitVerdict(ids, verdict.approved, env);
   return verdict;
 }
 
@@ -120,6 +140,27 @@ function getJobId(event: unknown): string | null {
   return null;
 }
 
+function getMemoId(event: unknown): string | null {
+  if (!event || typeof event !== "object") return null;
+  const payload = event as Record<string, unknown>;
+  const candidates = [
+    payload.memoId,
+    payload.memo_id,
+    (payload.payload as Record<string, unknown> | undefined)?.memoId,
+    (payload.payload as Record<string, unknown> | undefined)?.memo_id,
+    (payload.data as Record<string, unknown> | undefined)?.memoId,
+    (payload.data as Record<string, unknown> | undefined)?.memo_id
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim().length > 0) {
+      return candidate.trim();
+    }
+  }
+
+  return null;
+}
+
 function addressesEqual(left: string, right: string): boolean {
   return left.toLowerCase() === right.toLowerCase();
 }
@@ -129,4 +170,9 @@ function jsonResponse(payload: unknown, status = 200): Response {
     status,
     headers: { "content-type": "application/json" }
   });
+}
+
+function stringifyError(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
 }

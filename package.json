@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@e2b/code-interpreter": "^2.4.1",
+    "@e2b/code-interpreter": "^2.3.3",
     "viem": "^2.16.2"
   },
   "devDependencies": {

@@ -5,9 +5,14 @@ import type { Env } from "../types";
 
 const DEFAULT_REASON = "Evaluated by RedShell";
 
-export async function submitVerdict(jobId: string | null, approved: boolean, env: Env): Promise<void> {
-  if (!jobId) {
-    console.log("[RedShell] No jobId found. Skipping on-chain verdict.");
+export async function submitVerdict(
+  ids: { jobId: string | null; memoId: string | null },
+  approved: boolean,
+  env: Env
+): Promise<void> {
+  const targetId = ids.memoId ?? ids.jobId;
+  if (!targetId) {
+    console.log("[RedShell] No memoId or jobId found. Skipping on-chain verdict.");
     return;
   }
 
@@ -41,17 +46,21 @@ export async function submitVerdict(jobId: string | null, approved: boolean, env
     return;
   }
 
-  const jobIdValue = parseJobId(jobId);
-  if (jobIdValue === null) {
-    console.log("[RedShell] Invalid jobId. Skipping on-chain verdict.");
+  const targetValue = parseUint(targetId);
+  if (targetValue === null) {
+    console.log("[RedShell] Invalid memoId/jobId. Skipping on-chain verdict.");
     return;
   }
 
   const reason = env.ACP_CONTRACT_REASON?.trim() || DEFAULT_REASON;
+  const memoIdValue = ids.memoId ? parseUint(ids.memoId) : null;
+  const jobIdValue = ids.jobId ? parseUint(ids.jobId) : null;
   const args = buildArgs({
     abi,
     functionName,
     jobId: jobIdValue,
+    memoId: memoIdValue,
+    targetId: targetValue,
     approved,
     reason,
     evaluator: env.REDSHELL_WALLET_ADDRESS?.trim(),
@@ -99,8 +108,8 @@ function parseAbi(raw: string | undefined): Abi | null {
   }
 }
 
-function parseJobId(jobId: string): bigint | null {
-  const trimmed = jobId.trim();
+function parseUint(value: string): bigint | null {
+  const trimmed = value.trim();
   if (!trimmed) return null;
 
   try {
@@ -113,7 +122,9 @@ function parseJobId(jobId: string): bigint | null {
 function buildArgs(options: {
   abi: Abi;
   functionName: string;
-  jobId: bigint;
+  jobId: bigint | null;
+  memoId: bigint | null;
+  targetId: bigint;
   approved: boolean;
   reason: string;
   evaluator?: string;
@@ -135,7 +146,14 @@ function buildArgs(options: {
     const type = input.type;
     const name = input.name ?? "";
 
-    if (isUint(type) && nameMatch(name, ["job", "id"])) {
+    if (isUint(type) && nameMatch(name, ["memo"])) {
+      if (!options.memoId) return null;
+      args.push(options.memoId);
+      continue;
+    }
+
+    if (isUint(type) && nameMatch(name, ["job"])) {
+      if (!options.jobId) return null;
       args.push(options.jobId);
       continue;
     }
@@ -157,7 +175,7 @@ function buildArgs(options: {
     }
 
     if (isUint(type) && inputs.length === 1) {
-      args.push(options.jobId);
+      args.push(options.targetId);
       continue;
     }
 
@@ -179,7 +197,7 @@ function buildArgs(options: {
 
 function parseArgsOverride(
   raw: string | undefined,
-  context: { jobId: bigint; approved: boolean; reason: string; evaluator?: string }
+  context: { jobId: bigint | null; memoId: bigint | null; targetId: bigint; approved: boolean; reason: string; evaluator?: string }
 ): unknown[] | null {
   if (!raw) return null;
   try {
@@ -187,7 +205,9 @@ function parseArgsOverride(
     if (!Array.isArray(parsed)) return null;
 
     const resolved = parsed.map((entry) => {
+      if (entry === "$memoId") return context.memoId;
       if (entry === "$jobId") return context.jobId;
+      if (entry === "$targetId") return context.targetId;
       if (entry === "$approved") return context.approved;
       if (entry === "$reason") return context.reason;
       if (entry === "$evaluator") return context.evaluator ?? null;

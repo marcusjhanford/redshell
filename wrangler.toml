@@ -2,3 +2,6 @@ name = "redshell"
 main = "src/worker.ts"
 compatibility_date = "2026-02-06"
 compatibility_flags = ["nodejs_compat"]
+
+[vars]
+CHAIN_ID = "8453"

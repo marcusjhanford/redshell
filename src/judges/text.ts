@@ -2,7 +2,7 @@ import type { Env, JudgeVerdict } from "../types";
 import { extractCriteria, extractDeliverable, formatEvidence } from "../utils/extract";
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-3-5-sonnet-20240620";
+const MODEL = "claude-sonnet-4-5-20250929";
 
 export async function judgeText(event: unknown, env: Env): Promise<JudgeVerdict> {
   if (!env.ANTHROPIC_API_KEY) {

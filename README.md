@@ -1,6 +1,6 @@
 # RedShell
 <p align="center">
-  <img src="redshell_logo-removebg-preview.png" alt="RedShell logo" />
+  <img src="site/redshell_logo.png" alt="RedShell logo" />
 </p>
 ![Verified by RedShell](assets/verified-by-redshell.svg)
 
@@ -22,7 +22,7 @@ attacks. RedShell is the neutral third party: transparent, open source, and acco
 - RedShell signs APPROVE (release funds) or REJECT (refund buyer).
 
 ## Judging modes
-Text Judge: Claude 3.5 Sonnet performs semantic verification against the criteria. Code Judge:
+Text Judge: Claude Sonnet 4.5 performs semantic verification against the criteria. Code Judge:
 E2B sandbox executes the deliverable; any stderr rejects.
 
 ## Trust model
@@ -44,9 +44,8 @@ ANTHROPIC_API_KEY=your_anthropic_key
 E2B_API_KEY=your_e2b_key
 ```
 
-## Roadmap
-Week 1: Rubber Stamp MVP (auto-approve). Week 2: Text Judge (Claude). Week 3: Code Judge (E2B
-sandbox). Week 4: Open Source launch + Verified badge.
+## Status
+Production-ready. RedShell is live and evaluating ACP jobs on Base mainnet.
 
 ## Development
 - Install dependencies: `npm install`
@@ -55,11 +54,11 @@ sandbox). Week 4: Open Source launch + Verified badge.
 - Type check: `npm run typecheck`
 
 ## On-chain configuration
-- `BASE_RPC_URL`: Base RPC endpoint (Sepolia or mainnet)
-- `ACP_CONTRACT_ADDRESS`: ACP contract address
-- `ACP_CONTRACT_FUNCTION`: Function to submit verdicts
-- `ACP_CONTRACT_ABI`: JSON ABI array containing that function
-- Optional `ACP_CONTRACT_ARGS`: JSON array with placeholders `$jobId`, `$approved`, `$reason`, `$evaluator`
+- `BASE_RPC_URL`: Base mainnet RPC endpoint
+- `ACP_CONTRACT_ADDRESS`: ACP v2 contract (Base mainnet: `0xa6C9BA866992cfD7fd6460ba912bfa405adA9df0`)
+- `ACP_CONTRACT_FUNCTION`: Function to submit verdicts (default: `signMemo`)
+- `ACP_CONTRACT_ABI`: JSON ABI array containing the function
+- Optional `ACP_CONTRACT_ARGS`: JSON array with placeholders `$memoId`, `$approved`, `$reason`
 
 ## License
 MIT
