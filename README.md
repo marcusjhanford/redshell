@@ -2,9 +2,7 @@
 <p align="center">
   <img src="site/redshell_logo.png" alt="RedShell logo" />
 </p>
-<p align="center">
-  <img src="assets/verified-by-redshell.svg" alt="Verified by RedShell" />
-</p>
+![Verified by RedShell](assets/verified-by-redshell.png)
 
 The open source, serverless judge for agent commerce.
 
