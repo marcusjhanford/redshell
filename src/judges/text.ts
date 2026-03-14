@@ -43,7 +43,7 @@ export async function judgeText(event: unknown, env: Env): Promise<JudgeVerdict>
     };
   }
 
-  const payload = (await response.json());
+  const payload = (await response.json()) as AnthropicResponse;
   const contentText = extractContentText(payload);
   const parsed = parseVerdict(contentText);
 
