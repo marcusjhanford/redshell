@@ -1,5 +1,14 @@
-import { describe, it, expect } from 'vitest';
-import { judgeCode } from '../../src/judges/code';
+import { describe, it, expect, vi } from 'vitest';
+
+// Mock the E2B module to avoid ES module issues in tests
+vi.mock('@e2b/code-interpreter', () => ({
+  Sandbox: {
+    create: vi.fn(),
+  },
+}));
+
+// Import after mocking
+const { judgeCode } = await import('../../src/judges/code');
 
 describe('judgeCode', () => {
   it('should be defined', () => {
