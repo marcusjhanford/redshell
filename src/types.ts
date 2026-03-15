@@ -1,4 +1,4 @@
-export type JobType = "text" | "code" | "unknown";
+export type JobType = 'text' | 'code' | 'unknown';
 
 export interface Env {
   REDSHELL_WALLET_ADDRESS?: string;

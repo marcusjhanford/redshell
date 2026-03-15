@@ -1,0 +1,15 @@
+# Global code owners - all files require approval from the maintainer
+* @marcusjhanford
+
+# Core judges logic - critical business logic
+/src/judges/ @marcusjhanford
+
+# Blockchain utilities - handles transactions and private keys
+/src/utils/ @marcusjhanford
+
+# Infrastructure and deployment
+/.github/workflows/ @marcusjhanford
+/wrangler.toml @marcusjhanford
+
+# Documentation changes can be approved by maintainer
+*.md @marcusjhanford

@@ -6,11 +6,11 @@ export function extractCriteria(event: unknown): string | null {
     payload.spec,
     payload.task,
     payload.instructions,
-    payload.prompt
+    payload.prompt,
   ];
 
   for (const candidate of candidates) {
-    if (typeof candidate === "string" && candidate.trim().length > 0) {
+    if (typeof candidate === 'string' && candidate.trim().length > 0) {
       return candidate.trim();
     }
   }
@@ -25,7 +25,7 @@ export function extractDeliverable(event: unknown): unknown {
     payload.output,
     payload.result,
     payload.submission,
-    payload.artifact
+    payload.artifact,
   ];
 
   for (const candidate of candidates) {
@@ -40,11 +40,11 @@ export function extractDeliverable(event: unknown): unknown {
 export function extractCode(event: unknown): { code: string | null; language: string | null } {
   const deliverable = extractDeliverable(event);
 
-  if (typeof deliverable === "string") {
+  if (typeof deliverable === 'string') {
     return { code: deliverable.trim(), language: null };
   }
 
-  if (deliverable && typeof deliverable === "object") {
+  if (deliverable && typeof deliverable === 'object') {
     const payload = deliverable as Record<string, unknown>;
     const codeCandidate =
       pickString(payload.code) ??
@@ -63,10 +63,10 @@ export function extractCode(event: unknown): { code: string | null; language: st
 
 export function formatEvidence(deliverable: unknown, maxLength = 4000): string {
   if (deliverable === null || deliverable === undefined) {
-    return "<no deliverable provided>";
+    return '<no deliverable provided>';
   }
 
-  if (typeof deliverable === "string") {
+  if (typeof deliverable === 'string') {
     return truncate(deliverable, maxLength);
   }
 
@@ -74,7 +74,7 @@ export function formatEvidence(deliverable: unknown, maxLength = 4000): string {
 }
 
 function getPayload(event: unknown): Record<string, unknown> {
-  if (!event || typeof event !== "object") return {};
+  if (!event || typeof event !== 'object') {return {};}
   const payload = event as Record<string, unknown>;
   const nested =
     (payload.payload as Record<string, unknown> | undefined) ??
@@ -85,14 +85,14 @@ function getPayload(event: unknown): Record<string, unknown> {
 }
 
 function pickString(value: unknown): string | null {
-  if (typeof value === "string" && value.trim().length > 0) {
+  if (typeof value === 'string' && value.trim().length > 0) {
     return value.trim();
   }
   return null;
 }
 
 function truncate(value: string, maxLength: number): string {
-  if (value.length <= maxLength) return value;
+  if (value.length <= maxLength) {return value;}
   return `${value.slice(0, maxLength)}\n...<truncated>`;
 }
 
